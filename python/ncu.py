@@ -19,10 +19,10 @@ class Student:
         pass
 
 
-def getUID(token):
+def getUID(student):
     url_login = 'http://jc.ncu.edu.cn/system/auth/loginByToken'
     headers = {'Host': 'jc.ncu.edu.cn',
-               'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1 Edg/90.0.4430.93', 'token': token}
+               'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1 Edg/90.0.4430.93', 'token': student.token}
     # 通过token登录
     loginToken_json = requests.post(url_login, headers=headers).json()
     print(loginToken_json['data']['userName'],
@@ -31,7 +31,8 @@ def getUID(token):
     try:
         uid = loginToken_json['data']['userId']
         return uid
-    except TypeError as emsg:
+    except:
+        sendMailtoqq("打卡失败", student.qq)
         return "error"
 
 
@@ -55,11 +56,13 @@ def signIn(uid, token):
 
 def checkIn(student):
     # 获取学号
-    uid = getUID(student.token)
+    uid = getUID(student)
     # 打卡
     sign_info = signIn(uid, student.token)
     # 发送邮件
-    sendMailtoqq(sign_info, student.qq)
+    print(sign_info)
+    # sendMailtoqq("明天开始只有打卡失败会有邮件提示，成功不予提示", student.qq)
+    # sendMailtoqq(sign_info, student.qq)
     return sign_info
 
 
