@@ -38,25 +38,28 @@ def getCourse():
     print(Course)
     try:
         if json.dumps(Course).count("id") == 1:
-            return Course.get("id")
+            return Course
         else:
-            return Course[-1].get("id")
+            return Course[-1]
     except:
         print("查询课程致未知错误")
         exit()
 
 
-courseID = getCourse()
+course = getCourse()
 
 
 def getStudy(student):
     url = "http://www.jxqingtuan.cn/pub/vol/volClass/join?accessToken="
-    data = {"course": courseID, "nid": student.NumID, "cardNo": student.CARDNo}
+    data = {"course": course.get(
+        "id"), "nid": student.NumID, "cardNo": student.CARDNo}
     res = json.loads(
         (requests.post(url=url, data=json.dumps(data), headers=makeHeader())).text)
     print(res)
     if res.get("status") == 200:
-        sendMailtoqq("青年大学习已完成", student.qq)
+        success_msg = "青年大学习已完成：第" + \
+            course.get("id") + "次，标题：" + course.get("title")
+        sendMailtoqq(success_msg, student.qq)
     else:
         sendMailtoqq("青年大学习失败", student.qq)
 
