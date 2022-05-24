@@ -4,6 +4,8 @@ import requests
 import json
 import time
 from mail import sendMailtoqq
+from anti_useragent import UserAgent
+import secrets
 
 
 class student:
@@ -14,11 +16,24 @@ class student:
         pass
 
 
+def makeHeader():
+    return {
+        'Accept': 'application/json, text/javascript, */*; q=0.01',
+        'Accept-Encoding': 'gzip, deflate',
+        'Accept-Language': 'zh-CN,zh-Hans;q=0.9',
+        'Connection': 'close',
+        'Content-Type': 'application/json;charset=UTF-8',
+        'Cookie': 'JSESSIONID=' + secrets.token_urlsafe(40),
+        'Host': 'www.jxqingtuan.cn',
+        'Origin': 'http://www.jxqingtuan.cn',
+        'User-Agent': UserAgent(platform="iphone").wechat,
+        'X-Requested-With': 'XMLHttpRequest'
+    }
+
+
 def getCourse():
-    url = "http://osscache.vol.jxmfkj.com/html/assets/js/course_data.js"
-    res = requests.get(url).text
-    CourseInfo = res[18:]
-    CourseJson = json.loads(CourseInfo)
+    url = "http://www.jxqingtuan.cn/pub/vol/volClass/current"
+    CourseJson = requests.get(url, headers=makeHeader()).json()
     Course = CourseJson.get("result")
     print(Course)
     try:
@@ -35,9 +50,10 @@ courseID = getCourse()
 
 
 def getStudy(student):
-    url = "http://osscache.vol.jxmfkj.com/pub/vol/volClass/join?accessToken="
+    url = "http://www.jxqingtuan.cn/pub/vol/volClass/join?accessToken="
     data = {"course": courseID, "nid": student.NumID, "cardNo": student.CARDNo}
-    res = json.loads((requests.post(url=url, data=json.dumps(data))).text)
+    res = json.loads(
+        (requests.post(url=url, data=json.dumps(data), headers=makeHeader())).text)
     print(res)
     if res.get("status") == 200:
         sendMailtoqq("青年大学习已完成", student.qq)
