@@ -1,0 +1,10 @@
+# 以forward为镜像，REMOTE_PORT和REMOTE_HOST为变量，将本地的端口映射到远程的端口上
+# 完成这个docker-compose
+version: '3'
+services:
+  forward:
+    build: .
+    network_mode: host
+    environment:
+      - REMOTE_PORT=5001,6690
+      - REMOTE_HOST=10.0.5.249
