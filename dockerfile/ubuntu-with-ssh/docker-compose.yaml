@@ -1,0 +1,11 @@
+version: '3'
+services:
+  ubuntu:
+    image: ubuntu-with-ssh
+    container_name: minecraft
+    network_mode: bridge
+    ports:
+      - '8922:22'
+      - '25565:25565'
+    volumes:
+      - ./minecraft:/minecraft
